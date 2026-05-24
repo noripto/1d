@@ -22,10 +22,17 @@ export type RepositorySearchItem = {
   url: string;
 };
 
+/** ページネーション情報 */
+export type PageInfo = {
+  endCursor: string | null;
+  hasNextPage: boolean;
+};
+
 /** リポジトリ検索レスポンス */
 export type SearchRepositoriesResponse = {
   search: {
     repositoryCount: number;
+    pageInfo: PageInfo;
     nodes: (RepositorySearchItem | null)[];
   };
 };

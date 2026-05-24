@@ -4,6 +4,7 @@ import { getClient } from "@/lib/api/client";
 import { GET_REPOSITORY, SEARCH_REPOSITORIES } from "@/lib/graphql/queries";
 import type {
   GetRepositoryResponse,
+  PageInfo,
   RepositoryDetail,
   RepositorySearchItem,
   SearchRepositoriesResponse,
@@ -12,18 +13,24 @@ import type {
 export type SearchRepositoriesResult = {
   repositories: RepositorySearchItem[];
   totalCount: number;
+  pageInfo: PageInfo;
 };
 
 export async function searchRepositories(
   query: string,
+  after?: string,
 ): Promise<SearchRepositoriesResult> {
   if (!query.trim()) {
-    return { repositories: [], totalCount: 0 };
+    return {
+      repositories: [],
+      totalCount: 0,
+      pageInfo: { endCursor: null, hasNextPage: false },
+    };
   }
 
   const { data } = await getClient().query<SearchRepositoriesResponse>({
     query: SEARCH_REPOSITORIES,
-    variables: { query, first: 30 },
+    variables: { query, first: 30, after },
   });
 
   const repositories =
@@ -34,6 +41,7 @@ export async function searchRepositories(
   return {
     repositories,
     totalCount: data?.search.repositoryCount ?? 0,
+    pageInfo: data?.search.pageInfo ?? { endCursor: null, hasNextPage: false },
   };
 }
 
