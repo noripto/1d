@@ -31,7 +31,7 @@ export function SearchForm() {
         onChange={(e) => setQuery(e.target.value)}
         className="flex-1"
       />
-      <Button type="submit">
+      <Button type="submit" disabled={!query.trim()}>
         <Search className="h-4 w-4" />
         {isPending ? "検索中..." : "検索"}
       </Button>

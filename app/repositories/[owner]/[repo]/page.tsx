@@ -26,19 +26,16 @@ export default async function RepositoryDetailPage({ params }: Props) {
   ];
 
   return (
-    <div className="flex flex-col flex-1 bg-zinc-50 dark:bg-black">
-      <header className="border-b bg-white dark:bg-zinc-950 py-6">
-        <div className="container mx-auto px-4">
+    <div className="flex flex-col flex-1 bg-white dark:bg-zinc-950">
+      <main className="container mx-auto px-4 py-8 flex-1">
+        <div className="mb-6">
           <Link href="/">
-            <Button variant="ghost" size="sm" className="mb-4">
+            <Button variant="ghost" size="sm">
               <ArrowLeft className="h-4 w-4" />
               検索結果に戻る
             </Button>
           </Link>
         </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8 flex-1">
         <Card>
           <CardHeader className="flex flex-row items-start gap-4">
             <Avatar className="h-16 w-16">
