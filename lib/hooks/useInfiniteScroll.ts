@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type { PageInfo } from "@/lib/types/github";
 
 type Options<T> = {
@@ -14,7 +14,7 @@ type Result<T> = {
   items: T[];
   isLoading: boolean;
   hasNextPage: boolean;
-  sentinelRef: React.RefObject<HTMLDivElement | null>;
+  sentinelRef: (node: HTMLDivElement | null) => (() => void) | undefined;
 };
 
 export function useInfiniteScroll<T>({
@@ -26,7 +26,6 @@ export function useInfiniteScroll<T>({
   const [items, setItems] = useState<T[]>(initialItems);
   const [pageInfo, setPageInfo] = useState<PageInfo>(initialPageInfo);
   const [isLoading, setIsLoading] = useState(false);
-  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const loadMore = useCallback(async () => {
     if (!pageInfo.hasNextPage || !pageInfo.endCursor || isLoading) return;
@@ -43,22 +42,20 @@ export function useInfiniteScroll<T>({
     }
   }, [fetcher, pageInfo, isLoading, items, onStateChange]);
 
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
+  const loadMoreRef = useRef(loadMore);
+  loadMoreRef.current = loadMore;
 
+  const sentinelRef = useCallback((node: HTMLDivElement | null) => {
+    if (!node) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
-          loadMore();
-        }
+        if (entries[0].isIntersecting) loadMoreRef.current();
       },
       { threshold: 0.1 },
     );
-
-    observer.observe(sentinel);
+    observer.observe(node);
     return () => observer.disconnect();
-  }, [loadMore]);
+  }, []);
 
   return { items, isLoading, hasNextPage: pageInfo.hasNextPage, sentinelRef };
 }
