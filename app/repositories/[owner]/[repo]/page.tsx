@@ -29,12 +29,12 @@ export default async function RepositoryDetailPage({ params }: Props) {
     <div className="flex flex-col flex-1 bg-white dark:bg-zinc-950">
       <main className="container mx-auto px-4 py-8 flex-1">
         <div className="mb-6">
-          <Link href="/">
-            <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/">
               <ArrowLeft className="h-4 w-4" />
               検索結果に戻る
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
         <Card>
           <CardHeader className="flex flex-row items-start gap-4">

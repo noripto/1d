@@ -14,7 +14,7 @@ export default async function Home({ searchParams }: Props) {
       <main className="container mx-auto px-4 py-8 flex-1">
         <div className="mb-6">
           <Suspense fallback={null}>
-            <SearchForm key={q ?? ""} />
+            <SearchForm />
           </Suspense>
         </div>
         {q ? (

@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback } from "react";
 import { searchRepositories } from "@/app/_actions/searchRepositories";
+import { useInfiniteScroll } from "@/lib/hooks/useInfiniteScroll";
 import type { PageInfo, RepositorySearchItem } from "@/lib/types/github";
 import { RepositoryCard } from "./RepositoryCard";
 
@@ -18,41 +19,24 @@ export function RepositoryListInfinite({
   initialPageInfo,
   totalCount,
 }: Props) {
-  const [repositories, setRepositories] =
-    useState<RepositorySearchItem[]>(initialRepositories);
-  const [pageInfo, setPageInfo] = useState<PageInfo>(initialPageInfo);
-  const [isLoading, setIsLoading] = useState(false);
-  const sentinelRef = useRef<HTMLDivElement>(null);
+  const fetcher = useCallback(
+    async (cursor: string) => {
+      const result = await searchRepositories(query, cursor);
+      return { items: result.repositories, pageInfo: result.pageInfo };
+    },
+    [query],
+  );
 
-  const loadMore = useCallback(async () => {
-    if (!pageInfo.hasNextPage || !pageInfo.endCursor || isLoading) return;
-
-    setIsLoading(true);
-    try {
-      const result = await searchRepositories(query, pageInfo.endCursor);
-      setRepositories((prev) => [...prev, ...result.repositories]);
-      setPageInfo(result.pageInfo);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [query, pageInfo, isLoading]);
-
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          loadMore();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [loadMore]);
+  const {
+    items: repositories,
+    isLoading,
+    hasNextPage,
+    sentinelRef,
+  } = useInfiniteScroll({
+    initialItems: initialRepositories,
+    initialPageInfo,
+    fetcher,
+  });
 
   return (
     <div className="space-y-4">
@@ -68,12 +52,9 @@ export function RepositoryListInfinite({
       <div ref={sentinelRef} className="py-4 flex justify-center">
         {isLoading && (
           <div className="flex items-center gap-2 text-sm text-zinc-500">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600" />
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-200 border-t-zinc-500" />
             読み込み中...
           </div>
-        )}
-        {!pageInfo.hasNextPage && repositories.length > 0 && (
-          <p className="text-sm text-zinc-400">すべて表示しました</p>
         )}
       </div>
     </div>
