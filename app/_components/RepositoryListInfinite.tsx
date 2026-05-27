@@ -2,7 +2,9 @@
 
 import { useCallback } from "react";
 import { searchRepositories } from "@/app/_actions/searchRepositories";
+import { useSearchScrollContext } from "@/lib/context/SearchScrollContext";
 import { useInfiniteScroll } from "@/lib/hooks/useInfiniteScroll";
+import { useScrollRestoration } from "@/lib/hooks/useScrollRestoration";
 import type { PageInfo, RepositorySearchItem } from "@/lib/types/github";
 import { RepositoryCard } from "./RepositoryCard";
 
@@ -19,6 +21,9 @@ export function RepositoryListInfinite({
   initialPageInfo,
   totalCount,
 }: Props) {
+  const { getCachedState, setCachedState } = useSearchScrollContext();
+  const cached = getCachedState(query);
+
   const fetcher = useCallback(
     async (cursor: string) => {
       const result = await searchRepositories(query, cursor);
@@ -27,16 +32,26 @@ export function RepositoryListInfinite({
     [query],
   );
 
+  const onStateChange = useCallback(
+    (items: RepositorySearchItem[], pageInfo: PageInfo) => {
+      setCachedState(query, { items, pageInfo });
+    },
+    [query, setCachedState],
+  );
+
   const {
     items: repositories,
     isLoading,
     hasNextPage,
     sentinelRef,
   } = useInfiniteScroll({
-    initialItems: initialRepositories,
-    initialPageInfo,
+    initialItems: cached?.items ?? initialRepositories,
+    initialPageInfo: cached?.pageInfo ?? initialPageInfo,
     fetcher,
+    onStateChange,
   });
+
+  useScrollRestoration(query);
 
   return (
     <div className="space-y-4">
@@ -55,6 +70,9 @@ export function RepositoryListInfinite({
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-200 border-t-zinc-500" />
             読み込み中...
           </div>
+        )}
+        {!isLoading && !hasNextPage && repositories.length > 0 && (
+          <p className="text-sm text-zinc-400">すべて表示しました</p>
         )}
       </div>
     </div>

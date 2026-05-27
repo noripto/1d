@@ -19,6 +19,7 @@ export async function RepositoryList({ query }: Props) {
 
   return (
     <RepositoryListInfinite
+      key={query}
       query={query}
       initialRepositories={repositories}
       initialPageInfo={pageInfo}

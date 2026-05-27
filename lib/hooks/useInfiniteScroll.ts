@@ -7,6 +7,7 @@ type Options<T> = {
   initialItems: T[];
   initialPageInfo: PageInfo;
   fetcher: (cursor: string) => Promise<{ items: T[]; pageInfo: PageInfo }>;
+  onStateChange?: (items: T[], pageInfo: PageInfo) => void;
 };
 
 type Result<T> = {
@@ -20,6 +21,7 @@ export function useInfiniteScroll<T>({
   initialItems,
   initialPageInfo,
   fetcher,
+  onStateChange,
 }: Options<T>): Result<T> {
   const [items, setItems] = useState<T[]>(initialItems);
   const [pageInfo, setPageInfo] = useState<PageInfo>(initialPageInfo);
@@ -32,12 +34,14 @@ export function useInfiniteScroll<T>({
     setIsLoading(true);
     try {
       const result = await fetcher(pageInfo.endCursor);
-      setItems((prev) => [...prev, ...result.items]);
+      const newItems = [...items, ...result.items];
+      setItems(newItems);
       setPageInfo(result.pageInfo);
+      onStateChange?.(newItems, result.pageInfo);
     } finally {
       setIsLoading(false);
     }
-  }, [fetcher, pageInfo, isLoading]);
+  }, [fetcher, pageInfo, isLoading, items, onStateChange]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
