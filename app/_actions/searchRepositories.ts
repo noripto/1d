@@ -1,14 +1,52 @@
 "use server";
 
-import { getClient } from "@/lib/api/client";
-import { GET_REPOSITORY, SEARCH_REPOSITORIES } from "@/lib/graphql/queries";
 import type {
-  GetRepositoryResponse,
   PageInfo,
   RepositoryDetail,
   RepositorySearchItem,
-  SearchRepositoriesResponse,
 } from "@/lib/types/github";
+
+const BASE = "https://api.github.com";
+const PER_PAGE = 30;
+const HEADERS = { Accept: "application/vnd.github+json" };
+
+type Owner = { login: string; avatar_url: string };
+
+type Repository = {
+  id: number;
+  name: string;
+  owner: Owner;
+  description: string | null;
+  stargazers_count: number;
+  forks_count: number;
+  language: string | null;
+  html_url: string;
+};
+
+type RepositoryDetailResponse = Repository & {
+  subscribers_count: number;
+  open_issues_count: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type SearchResponse = {
+  total_count: number;
+  items: Repository[];
+};
+
+function mapRepository(r: Repository): RepositorySearchItem {
+  return {
+    id: String(r.id),
+    name: r.name,
+    owner: { login: r.owner.login, avatarUrl: r.owner.avatar_url },
+    description: r.description,
+    stargazerCount: r.stargazers_count,
+    forkCount: r.forks_count,
+    primaryLanguage: r.language ? { name: r.language, color: "" } : null,
+    url: r.html_url,
+  };
+}
 
 export type SearchRepositoriesResult = {
   repositories: RepositorySearchItem[];
@@ -28,20 +66,28 @@ export async function searchRepositories(
     };
   }
 
-  const { data } = await getClient().query<SearchRepositoriesResponse>({
-    query: SEARCH_REPOSITORIES,
-    variables: { query, first: 30, after },
-  });
+  const page = after ? parseInt(after, 10) : 1;
+  const url = new URL(`${BASE}/search/repositories`);
+  url.searchParams.set("q", query);
+  url.searchParams.set("per_page", String(PER_PAGE));
+  url.searchParams.set("page", String(page));
 
-  const repositories =
-    data?.search.nodes.filter(
-      (node): node is RepositorySearchItem => node !== null,
-    ) ?? [];
+  const res = await fetch(url.toString(), {
+    headers: HEADERS,
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+
+  const data: SearchResponse = await res.json();
+  const hasNextPage = data.total_count > page * PER_PAGE;
 
   return {
-    repositories,
-    totalCount: data?.search.repositoryCount ?? 0,
-    pageInfo: data?.search.pageInfo ?? { endCursor: null, hasNextPage: false },
+    repositories: data.items.map(mapRepository),
+    totalCount: data.total_count,
+    pageInfo: {
+      hasNextPage,
+      endCursor: hasNextPage ? String(page + 1) : null,
+    },
   };
 }
 
@@ -49,10 +95,28 @@ export async function getRepository(
   owner: string,
   name: string,
 ): Promise<RepositoryDetail | null> {
-  const { data } = await getClient().query<GetRepositoryResponse>({
-    query: GET_REPOSITORY,
-    variables: { owner, name },
+  const res = await fetch(`${BASE}/repos/${owner}/${name}`, {
+    headers: HEADERS,
+    cache: "no-store",
   });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
 
-  return data?.repository ?? null;
+  const result: RepositoryDetailResponse = await res.json();
+  return {
+    id: String(result.id),
+    name: result.name,
+    owner: { login: result.owner.login, avatarUrl: result.owner.avatar_url },
+    description: result.description,
+    url: result.html_url,
+    stargazerCount: result.stargazers_count,
+    forkCount: result.forks_count,
+    primaryLanguage: result.language
+      ? { name: result.language, color: "" }
+      : null,
+    watchers: { totalCount: result.subscribers_count },
+    issues: { totalCount: result.open_issues_count },
+    createdAt: result.created_at,
+    updatedAt: result.updated_at,
+  };
 }
