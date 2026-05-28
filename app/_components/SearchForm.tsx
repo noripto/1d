@@ -13,7 +13,6 @@ export function SearchForm() {
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
 
   const handleSubmit = (e: React.FormEvent) => {
-    console.log("handleSubmit", query);
     e.preventDefault();
     if (!query.trim()) return;
 
