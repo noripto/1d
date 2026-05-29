@@ -1,7 +1,7 @@
 ## 概要
 
 **こちらはGitHub GraphQL APIでの実装です。ご確認頂く際にGitHubのPersonal Access Tokenが必要となります。**
-（ご確認頂く際にお手数かと思い、REST版での実装も`/feature/rest_api`のブランチで行っています。APIおよびテスト部分以外は同一の内容です。）
+（ご確認頂く際にお手数かと思い、REST版での実装も[/feature/rest_api](https://github.com/noripto/1d/tree/feature/rest_api)のブランチで行っています。APIおよびテスト部分以外は同一の内容です。）
 
 ## 環境構築
 
