@@ -1,6 +1,7 @@
 ## 概要
 
-**こちらはGitHub REST APIでの実装です。**
+**こちらはGitHub REST APIでの実装です。**  
+Personal Access Tokenなしだと呼び出し回数に制限がかかる場合があるそうなので、その場合はお手数をおかけしますが[GraphQL版](https://github.com/noripto/1d)での実装をご確認頂けますと幸いです。
 
 ## 環境構築
 
