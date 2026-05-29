@@ -17,7 +17,12 @@ export function BackButton() {
   };
 
   return (
-    <Button variant="ghost" size="sm" onClick={handleClick}>
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={handleClick}
+      className="cursor-pointer"
+    >
       <ArrowLeft className="h-4 w-4" />
       検索結果に戻る
     </Button>
