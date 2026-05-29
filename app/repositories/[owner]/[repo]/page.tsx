@@ -1,10 +1,26 @@
-import { notFound } from "next/navigation";
+import {
+  ArrowLeft,
+  CircleDot,
+  ExternalLink,
+  Eye,
+  GitFork,
+  Star,
+} from "lucide-react";
 import Link from "next/link";
-import { ArrowLeft, Star, GitFork, Eye, CircleDot, ExternalLink } from "lucide-react";
+import { notFound } from "next/navigation";
 import { getRepository } from "@/app/_actions/searchRepositories";
-import { Card, CardContent, CardHeader, CardTitle } from "@/lib/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/lib/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/lib/components/ui/avatar";
 import { Button } from "@/lib/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/lib/components/ui/card";
 
 type Props = {
   params: Promise<{ owner: string; repo: string }>;
@@ -39,8 +55,13 @@ export default async function RepositoryDetailPage({ params }: Props) {
         <Card>
           <CardHeader className="flex flex-row items-start gap-4">
             <Avatar className="h-16 w-16">
-              <AvatarImage src={repository.owner.avatarUrl} alt={repository.owner.login} />
-              <AvatarFallback>{repository.owner.login[0].toUpperCase()}</AvatarFallback>
+              <AvatarImage
+                src={repository.owner.avatarUrl}
+                alt={repository.owner.login}
+              />
+              <AvatarFallback>
+                {repository.owner.login[0].toUpperCase()}
+              </AvatarFallback>
             </Avatar>
             <div className="flex-1">
               <CardTitle className="text-2xl">
@@ -57,7 +78,9 @@ export default async function RepositoryDetailPage({ params }: Props) {
                   <span className="flex items-center gap-1 text-sm">
                     <span
                       className="h-3 w-3 rounded-full"
-                      style={{ backgroundColor: repository.primaryLanguage.color }}
+                      style={{
+                        backgroundColor: repository.primaryLanguage.color,
+                      }}
                     />
                     {repository.primaryLanguage.name}
                   </span>
@@ -82,7 +105,9 @@ export default async function RepositoryDetailPage({ params }: Props) {
                   className="flex flex-col items-center p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg"
                 >
                   <Icon className="h-6 w-6 text-zinc-500 mb-2" />
-                  <span className="text-2xl font-bold">{value.toLocaleString()}</span>
+                  <span className="text-2xl font-bold">
+                    {value.toLocaleString()}
+                  </span>
                   <span className="text-sm text-zinc-500">{label}</span>
                 </div>
               ))}

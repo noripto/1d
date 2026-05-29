@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { SearchForm } from "./_components/SearchForm";
 import { RepositoryList } from "./_components/RepositoryList";
+import { SearchForm } from "./_components/SearchForm";
 
 type Props = {
   searchParams: Promise<{ q?: string }>;
@@ -20,9 +20,7 @@ export default async function Home({ searchParams }: Props) {
         {q ? (
           <Suspense
             fallback={
-              <div className="text-center py-16 text-zinc-400">
-                検索中...
-              </div>
+              <div className="text-center py-16 text-zinc-400">検索中...</div>
             }
           >
             <RepositoryList query={q} />

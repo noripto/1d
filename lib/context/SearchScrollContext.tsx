@@ -31,10 +31,7 @@ export function SearchScrollProvider({
   const [cache, setCache] = useState<Map<string, CachedState>>(new Map());
   const scrollMap = useRef<Map<string, number>>(new Map());
 
-  const getCachedState = useCallback(
-    (key: string) => cache.get(key),
-    [cache],
-  );
+  const getCachedState = useCallback((key: string) => cache.get(key), [cache]);
 
   const setCachedState = useCallback((key: string, state: CachedState) => {
     setCache((prev) => new Map(prev).set(key, state));

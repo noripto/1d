@@ -1,7 +1,16 @@
+import { GitFork, Star } from "lucide-react";
 import Link from "next/link";
-import { Star, GitFork } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/lib/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/lib/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/lib/components/ui/avatar";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/lib/components/ui/card";
 import type { RepositorySearchItem } from "@/lib/types/github";
 
 type Props = {
@@ -14,8 +23,13 @@ export function RepositoryCard({ repository }: Props) {
       <Card className="h-full transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900">
         <CardHeader className="flex flex-row items-center gap-3 pb-2">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={repository.owner.avatarUrl} alt={repository.owner.login} />
-            <AvatarFallback>{repository.owner.login[0].toUpperCase()}</AvatarFallback>
+            <AvatarImage
+              src={repository.owner.avatarUrl}
+              alt={repository.owner.login}
+            />
+            <AvatarFallback>
+              {repository.owner.login[0].toUpperCase()}
+            </AvatarFallback>
           </Avatar>
           <CardTitle className="text-base font-medium">
             <span className="text-zinc-500">{repository.owner.login}/</span>
