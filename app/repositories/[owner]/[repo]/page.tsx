@@ -1,20 +1,12 @@
-import {
-  ArrowLeft,
-  CircleDot,
-  ExternalLink,
-  Eye,
-  GitFork,
-  Star,
-} from "lucide-react";
-import Link from "next/link";
+import { CircleDot, ExternalLink, Eye, GitFork, Star } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getRepository } from "@/app/_actions/searchRepositories";
+import { BackButton } from "@/app/_components/BackButton";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/lib/components/ui/avatar";
-import { Button } from "@/lib/components/ui/button";
 import {
   Card,
   CardContent,
@@ -45,12 +37,7 @@ export default async function RepositoryDetailPage({ params }: Props) {
     <div className="flex flex-col flex-1 bg-white dark:bg-zinc-950">
       <main className="container mx-auto px-4 py-8 flex-1">
         <div className="mb-6">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/">
-              <ArrowLeft className="h-4 w-4" />
-              検索結果に戻る
-            </Link>
-          </Button>
+          <BackButton />
         </div>
         <Card>
           <CardHeader className="flex flex-row items-start gap-4">
