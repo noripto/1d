@@ -1,15 +1,8 @@
 ## 概要
 
-**こちらはGitHub GraphQL APIでの実装です。ご確認頂く際にGitHubのPersonal Access Tokenが必要となります。**
-（ご確認頂く際にお手数かと思い、REST版での実装も`/feature/rest_api`のブランチで行っています。APIおよびテスト部分以外は同一の内容です。）
+**こちらはGitHub REST APIでの実装です。**
 
 ## 環境構築
-
-envファイルに下記の値を設定
-```
-GITHUB_GRAPHQL_ENDPOINT=https://api.github.com/graphql
-GITHUB_TOKEN=[取得したPersonal Access Token]
-```
 
 パッケージインストール
 ```bash
@@ -26,7 +19,6 @@ pnpm dev
 | カテゴリ | 採用技術 |
 |---------|---------|
 | フレームワーク | Next.js 16 (App Router) |
-| データ取得 | GitHub GraphQL API + Apollo Client v4 |
 | UI コンポーネント | shadcn/ui + Radix UI |
 | スタイリング | Tailwind CSS v4 |
 | Linter / Formatter | Biome |
